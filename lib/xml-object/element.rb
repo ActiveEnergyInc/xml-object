@@ -13,6 +13,32 @@ module XMLObject::Element
     @__raw_xml
   end
 
+  # Will traverse all the child nodes and return if the element contains a node with a specific name
+  def has_child_node?(node_name)
+    return true if @__children.keys.include?(node_name)
+    answer = false
+    @__children.keys.each do |key|
+      if self[key].has_child_node?(node_name)
+        answer = true
+        break
+      end
+    end
+    return answer
+  end
+
+  def child_nodes_have_attribute?(attribute_name)
+    return true if @__attributes.keys.include?(attribute_name)
+    answer = false
+    @__children.keys.each do |key|
+      if self[key].child_nodes_have_attribute?(attribute_name)
+        answer = true
+        break
+      end
+    end
+    return answer
+  end
+
+
   private ##################################################################
 
   def method_missing(m, *a, &b) # :nodoc:
