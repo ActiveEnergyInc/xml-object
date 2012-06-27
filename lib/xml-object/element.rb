@@ -13,27 +13,46 @@ module XMLObject::Element
     @__raw_xml
   end
 
-  # Will traverse all the child nodes and return if the element contains a node with a specific name
+  # Will traverse all the child nodes and return if any of them contain a node with a specific name
+  # An example of the usage would be
+  #   xml_object = XMLObject.new(File.open('/path/to/file'))
+  #   xml_object.has_child_node?(:SomeNodeName)
   def has_child_node?(node_name)
     return true if @__children.keys.include?(node_name)
-    answer = false
+    answer = false    
     @__children.keys.each do |key|
-      if self[key].has_child_node?(node_name)
-        answer = true
-        break
+      if self[key].class.eql?(Array)
+        self[key].each do |e|
+          answer = e.has_child_node?(node_name)
+        end
+      else
+        if self[key].has_child_node?(node_name)
+          answer = true
+          break
+        end
       end
     end
     return answer
   end
 
+  # Will traverse all the child nodes and return if any of them contain an attribute with a specific name
+  # An example of the usage would be
+  #   xml_object = XMLObject.new(File.open('/path/to/file'))
+  #   xml_object.child_nodes_have_attribute?(:SomeAttributeName)
   def child_nodes_have_attribute?(attribute_name)
     return true if @__attributes.keys.include?(attribute_name)
     answer = false
     @__children.keys.each do |key|
-      if self[key].child_nodes_have_attribute?(attribute_name)
-        answer = true
-        break
-      end
+      if self[key].class.eql?(Array)
+        self[key].each do |e|
+          answer = e.child_nodes_have_attribute?(attribute_name)
+        end
+      else
+        if self[key].child_nodes_have_attribute?(attribute_name)
+          answer = true
+          break
+        end
+      end     
     end
     return answer
   end
